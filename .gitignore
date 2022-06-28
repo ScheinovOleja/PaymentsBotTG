@@ -130,4 +130,4 @@ dmypy.json
 
 # My ignore files
 /.idea/
-/settings/config.cfg
+/payments_bot/settings/config.cfg
