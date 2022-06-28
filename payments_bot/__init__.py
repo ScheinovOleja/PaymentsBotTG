@@ -16,9 +16,26 @@ storage = RedisStorage2('localhost', 6379, db=2)
 dp = Dispatcher(bot, storage=storage, loop=loop)
 dp.middleware.setup(LoggingMiddleware())
 
-if not os.path.isdir(f'{os.getcwd()}/logs'):
-    os.mkdir(f'{os.getcwd()}/logs')
-logging.basicConfig(format="[%(asctime)s] %(levelname)s : %(name)s : %(message)s",
-                    level=logging.ERROR, datefmt="%d-%m-%y %H:%M:%S", filename='logs/log_error.log')
-logging.getLogger('aiogram').setLevel(logging.ERROR)
-logger = logging.getLogger(__name__)
+if not os.path.isdir(f'{os.getcwd()}/payments_bot/logs'):
+    os.mkdir(f'{os.getcwd()}/payments_bot/logs')
+# Логгер INFO
+logger_info = logging.getLogger('log_info')
+logger_info.setLevel(logging.INFO)
+# Логгер ERROR
+logger_error = logging.getLogger('log_error')
+logger_error.setLevel(logging.ERROR)
+# Файлы логгера
+fh_info = logging.FileHandler(f'{os.getcwd()}/payments_bot/logs/log_info.log')
+fh_info.setLevel(logging.INFO)
+fh_error = logging.FileHandler(f'{os.getcwd()}/payments_bot/logs/log_error.log')
+fh_error.setLevel(logging.ERROR)
+# Формат логгера
+fmtstr = "[%(asctime)s] %(levelname)s : %(name)s : %(message)s"
+fmtdate = "%d-%m-%y %H:%M:%S"
+formatter = logging.Formatter(fmtstr, fmtdate)
+# Установка формата логгера
+fh_info.setFormatter(formatter)
+fh_error.setFormatter(formatter)
+# Инициализация логгера
+logger_info.addHandler(fh_info)
+logger_error.addHandler(fh_error)

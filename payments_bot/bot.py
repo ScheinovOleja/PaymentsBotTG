@@ -1,7 +1,7 @@
 from aiogram import Dispatcher
 from aiogram.utils import executor
 
-from payments_bot import dp, loop
+from payments_bot import dp, loop, logger_info, logger_error
 
 
 async def register_handler_scenarios(dispatcher: Dispatcher):
@@ -17,11 +17,11 @@ async def register_handler_back_handler(dispatcher: Dispatcher):
 
 
 async def startup(dispatcher: Dispatcher):
-    pass
+    logger_info.info('Start bot')
 
 
 async def shutdown(dispatcher: Dispatcher):
-    pass
+    logger_info.info('Stop bot')
 
 
 if __name__ == "__main__":
