@@ -1,5 +1,5 @@
 [bot]
-API_TOKEN = your_token
+API_TOKEN =
 
 [database]
 database =
@@ -7,3 +7,9 @@ user =
 password =
 host =
 port =
+
+[admin]
+id =
+
+[channel]
+id = -100
