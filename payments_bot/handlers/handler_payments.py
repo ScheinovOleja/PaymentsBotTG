@@ -53,7 +53,8 @@ async def payment_option(query: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     markup = types.InlineKeyboardMarkup()
     with db_session:
-        option = PaymentOption.select(lambda options: options.id == data['tariff'])[:][0]
+        tariff = Tariffs.select(lambda tariffs: tariffs.id == data['tariff'])[:][0]
+        option = PaymentOption.select(lambda options: options.tariff_id == tariff)[:][0]
         markup.add(
             types.InlineKeyboardButton(
                 text=f'Я оплатил',

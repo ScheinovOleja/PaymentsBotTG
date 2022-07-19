@@ -1,11 +1,12 @@
-from datetime import datetime, timedelta
+import calendar
+import datetime
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from pony.orm import db_session
+from pony.orm import db_session, commit
 
 from payments_bot import bot, config
-from payments_bot.models import Tariffs, PaymentOption
+from payments_bot.models import Tariffs, PaymentOption, AllUsers
 from payments_bot.states.state_menu import AdminMenu
 
 main_menu_btn = types.InlineKeyboardButton(
@@ -18,7 +19,7 @@ back_btn = types.InlineKeyboardButton(
 )
 
 
-async def send_menu_msg(message: types.Message):
+async def send_menu_msg(message: types.Message, state: FSMContext):
     markup = types.InlineKeyboardMarkup()
     markup.add(
         types.InlineKeyboardButton(
@@ -148,10 +149,25 @@ async def info_payment(query: types.CallbackQuery, state: FSMContext):
     await query.message.edit_text(text, reply_markup=markup)
 
 
+def add_months(source_date, months):
+    month = source_date.month - 1 + months
+    year = source_date.year + month // 12
+    month = month % 12 + 1
+    day = min(source_date.day, calendar.monthrange(year, month)[1])
+    return datetime.date(year, month, day)
+
+
 async def confirm_paid(query: types.CallbackQuery, state: FSMContext):
     channel_obj = await bot.create_chat_invite_link(config['channel']['id'],
-                                                    expire_date=datetime.now() + timedelta(days=1),
+                                                    expire_date=datetime.datetime.now() + datetime.timedelta(days=1),
                                                     member_limit=1)
+    with db_session:
+        user = AllUsers.get(tg_id=query.data.split('_')[1])
+        data = await state.get_data(user.tg_id)
+        date = datetime.date.today()
+        test_date = add_months(date, data['months'])
+        user.date_of_cancel = test_date
+        commit()
     await bot.send_message(query.data.split('_')[1], f'Ваша ссылка для вступления в канал: {channel_obj.invite_link}')
     await query.message.edit_reply_markup(None)
 

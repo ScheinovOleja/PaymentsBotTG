@@ -1,4 +1,5 @@
 import configparser
+import datetime
 import os
 
 import psycopg2
@@ -15,9 +16,9 @@ db.bind(**config['database'], provider='postgres')
 class AllUsers(db.Entity):
     _table_ = 'users'
     id = PrimaryKey(int, auto=True)
-    tg_id = Required(int, nullable=False, index=True)
+    tg_id = Required(int, nullable=False, index=True, size=64)
     username = Required(str, nullable=True)
-    days_subscription = Optional(int, nullable=True)
+    date_of_cancel = Optional(datetime.date, nullable=True)
 
 
 class Tariffs(db.Entity):
